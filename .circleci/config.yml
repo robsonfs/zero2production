@@ -3,9 +3,17 @@ jobs:
   build-and-test:
     docker:
       - image: circleci/rust
+        # environment:
+        #   DATABASE_URL: postgres://postgres:password@localhost/newsletter_test_ci
+      - image: postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: newsletter_test_ci
     environment:
       # Fail the build if there are warnings
       RUSTFLAGS: '-D warnings'
+      DATABASE_URL: postgres://postgres:password@localhost/newsletter_test_ci
     steps:
       - checkout
       - run:
