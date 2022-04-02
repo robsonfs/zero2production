@@ -60,7 +60,7 @@ jobs:
           key: v1-cargo-audit-{{ arch }}
       - run:
           name: Check for known security issues in dependencies
-          command: cargo audit
+          command: cargo audit --ignore RUSTSEC-2020-0071 --ignore RUSTSEC-2020-0159
 
   format:
     docker:
