@@ -5,20 +5,26 @@ jobs:
       - image: circleci/rust
         # environment:
         #   DATABASE_URL: postgres://postgres:password@localhost/newsletter_test_ci
-      - image: postgres:14.0
+      - image: postgres:14.2
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: newsletter_test_ci
+          POSTGRES_DB: newsletter
     environment:
       # Fail the build if there are warnings
       RUSTFLAGS: '-D warnings'
-      DATABASE_URL: postgres://postgres:password@localhost/newsletter_test_ci
+      DATABASE_URL: postgres://postgres:password@localhost/newsletter
     steps:
       - checkout
       - run:
           name: Version information
           command: rustc --version; cargo --version; rustup --version
+      - run:
+          name: Install sqlx
+          command: cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres
+      - run:
+          name: Database setup
+          command: sqlx database create; sqlx migrate run
       - restore_cache:
           keys:
             - v1-cargo-cache-{{ arch }}-{{ checksum "Cargo.lock" }}
@@ -80,11 +86,24 @@ jobs:
   lint:
     docker:
       - image: circleci/rust
+      - image: postgres:14.2
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: newsletter
+    environment:
+      DATABASE_URL: postgres://postgres:password@localhost/newsletter
     steps:
       - checkout
       - run:
           name: Version information
           command: rustc --version; cargo --version; rustup --version
+      - run:
+          name: Install sqlx
+          command: cargo install --version=0.5.7 sqlx-cli --no-default-features --features postgres
+      - run:
+          name: Database setup
+          command: sqlx database create; sqlx migrate run
       - run:
           name: Install Clippy
           command: rustup component add clippy
