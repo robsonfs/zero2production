@@ -18,7 +18,10 @@ async fn main() -> std::io::Result<()> {
             .expect("Failed to connect to Postgres");
 
     // Starting an HTTP server
-    let address = format!("0.0.0.0:{}", configuration.application_port);
+    let address = format!(
+        "{}:{}",
+        configuration.application.host, configuration.application.port
+    );
     let listener = TcpListener::bind(address)?;
     run(listener, connection_pool)?.await
 }

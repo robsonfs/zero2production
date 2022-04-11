@@ -9,8 +9,10 @@ COPY . .
 RUN cargo build --release
 
 FROM gcr.io/distroless/cc-debian11
+ENV APP_ENVIRONMENT=production
 
-COPY --from=build /app/target/release/zero2prod /usr/bin
-COPY --from=build /app/configuration.yaml .
+WORKDIR /app
+COPY --from=build /app/target/release/zero2prod /app/
+COPY --from=build /app/configuration /app/configuration
 
-ENTRYPOINT ["zero2prod"]
+ENTRYPOINT ["./zero2prod"]
