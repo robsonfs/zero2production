@@ -47,14 +47,11 @@ impl DatabaseSettings {
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     // TODO: Update the config crate to 0.12 and make the propoer changes
     let mut settings = config::Config::default();
-    let base_path = std::env::current_dir()
-        .expect("Failed to determine the current directory");
+    let base_path = std::env::current_dir().expect("Failed to determine the current directory");
     let configuration_directory = base_path.join("configuration");
 
     // Read the default configuration file
-    settings.merge(config::File::from(
-        configuration_directory.join("base")
-    ).required(true))?;
+    settings.merge(config::File::from(configuration_directory.join("base")).required(true))?;
 
     // Detect the running environment.
     // Default to `local` if unspecified.
@@ -65,8 +62,7 @@ pub fn get_configuration() -> Result<Settings, config::ConfigError> {
 
     // Layer on environment-specific values.
     settings.merge(
-        config::File::from(configuration_directory.join(environment.as_str()))
-        .required(true),
+        config::File::from(configuration_directory.join(environment.as_str())).required(true),
     )?;
 
     settings.try_into()
@@ -81,7 +77,7 @@ impl Environment {
     pub fn as_str(&self) -> &'static str {
         match self {
             Environment::Local => "local",
-            Environment::Production => "production"
+            Environment::Production => "production",
         }
     }
 }
